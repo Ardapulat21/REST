@@ -1,2 +1,4 @@
+.gitignore
+.gitattributes
 REST/bin/
 REST/obj/
