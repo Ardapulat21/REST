@@ -17,12 +17,12 @@ namespace REST.Services
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
             var issuer = _configuration["JWT:Issuer"];
             var audience = _configuration["JWT:Audience"];
-            var expiration = DateTime.UtcNow.AddMinutes(20);
+            var expiration = DateTime.UtcNow.AddMinutes(10);
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = new JwtSecurityToken(
                 issuer: issuer,
                 audience: audience,
-                expires: DateTime.Now.AddMinutes(10),
+                expires: expiration,
                 claims: new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, username),
