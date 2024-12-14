@@ -29,7 +29,7 @@ namespace REST.Controllers
         [Route("Login")]
         public async Task<IActionResult?> Login([FromBody] User? credentials){
             var user = await _userService.GetByUsername(credentials.Username);
-             if(user != null && user.Password == credentials.Password)
+            if(user != null && user.Username == credentials.Username  && user.Password == credentials.Password) 
              {
                 var token = _tokenService.GenerateJWT(credentials.Username);
                 return Ok(token);

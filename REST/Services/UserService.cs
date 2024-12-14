@@ -49,9 +49,6 @@ namespace REST.Services
             if(user == null)
                 return UserStatus.NotFound;
 
-            else if(await GetByUsername(credentials.Username) != null || await GetByEmail(credentials.Email) != null)
-                return UserStatus.Found;
-
             user.Username = credentials.Username;
             user.Password = credentials.Password;
             user.Email = credentials.Email;
