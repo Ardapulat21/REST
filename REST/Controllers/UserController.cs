@@ -28,19 +28,19 @@ namespace REST.Controllers
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult?> Login([FromBody] User? credentials){
-            var user = await _userService.GetByUsername(credentials.Username);
-            if(user != null && user.Username == credentials.Username  && user.Password == credentials.Password) 
-             {
+            bool isValid = await _userService.Login(credentials);
+            if(isValid) 
+            {
                 var token = _tokenService.GenerateJWT(credentials.Username);
                 return Ok(token);
-             }
+            }
             return NotFound("User could not be found!");
         }
         [HttpPost]
         [Route("Register")]
         public async Task<IActionResult> Register([FromBody] User? user)
         {
-           var userStatus = await _userService.Add(user);
+           var userStatus = await _userService.Register(user);
            switch (userStatus)
            {
                 case UserStatus.Found:

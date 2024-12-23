@@ -10,8 +10,10 @@ namespace REST.Services
     public class UserService : IUserService
     {
         ApplicationDbContext _context;
-        public UserService(ApplicationDbContext context){
+        IHashingService _hashingService;
+        public UserService(ApplicationDbContext context,IHashingService hashingService){
             _context = context;
+            _hashingService = hashingService;
         }
         public async Task<DbSet<User>> GetUsers(){
             return _context.Users;
@@ -25,11 +27,12 @@ namespace REST.Services
         public async Task<User?> GetById(int id){
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
-        public async Task<UserStatus> Add(User credentials){
+        public async Task<UserStatus> Register(User credentials){
             var user = _context.Users.FirstOrDefault(u => u.Username == credentials.Username || u.Email == credentials.Email);
             if(user != null)
                 return UserStatus.Found;
-
+            
+            credentials.Password = _hashingService.GetHash(credentials.Password);
             _context.Add(credentials);
             await _context.SaveChangesAsync();
             return UserStatus.OK;
@@ -55,6 +58,15 @@ namespace REST.Services
             await _context.SaveChangesAsync();
 
             return UserStatus.OK; 
+        }
+        public async Task<bool> Login(User credentials){
+            var user = await GetByUsername(credentials.Username);
+            if(user != null && user.Username == credentials.Username  && 
+            credentials.Password == user.Password )
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
