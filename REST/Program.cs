@@ -12,6 +12,7 @@ ConfigurationManager configuration = builder.Configuration;
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
+builder.Services.AddSingleton<IHashingService, HashingService>();
 
 builder.Services.AddControllers();
 

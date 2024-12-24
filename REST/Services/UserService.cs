@@ -27,16 +27,6 @@ namespace REST.Services
         public async Task<User?> GetById(int id){
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
-        public async Task<UserStatus> Register(User credentials){
-            var user = _context.Users.FirstOrDefault(u => u.Username == credentials.Username || u.Email == credentials.Email);
-            if(user != null)
-                return UserStatus.Found;
-            
-            credentials.Password = _hashingService.GetHash(credentials.Password);
-            _context.Add(credentials);
-            await _context.SaveChangesAsync();
-            return UserStatus.OK;
-        }
         public async Task<UserStatus> Delete(int id){
             var user = await GetById(id);
             if(user == null)
@@ -59,10 +49,20 @@ namespace REST.Services
 
             return UserStatus.OK; 
         }
+        public async Task<UserStatus> Register(User credentials){
+            var user = _context.Users.FirstOrDefault(u => u.Username == credentials.Username || u.Email == credentials.Email);
+            if(user != null)
+                return UserStatus.Found;
+            
+            credentials.Password = _hashingService.GetHash(credentials.Password);
+            _context.Add(credentials);
+            await _context.SaveChangesAsync();
+            return UserStatus.OK;
+        }
         public async Task<bool> Login(User credentials){
             var user = await GetByUsername(credentials.Username);
             if(user != null && user.Username == credentials.Username  && 
-            credentials.Password == user.Password )
+            _hashingService.IsMatched(credentials.Password,user.Password))
             {
                 return true;
             }
