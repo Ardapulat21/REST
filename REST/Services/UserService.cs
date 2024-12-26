@@ -59,14 +59,14 @@ namespace REST.Services
             await _context.SaveChangesAsync();
             return UserStatus.OK;
         }
-        public async Task<bool> Login(User credentials){
+        public async Task<User?> Login(User credentials){
             var user = await GetByUsername(credentials.Username);
             if(user != null && user.Username == credentials.Username  && 
             _hashingService.IsMatched(credentials.Password,user.Password))
             {
-                return true;
+                return user;
             }
-            return false;
+            return null;
         }
     }
 }

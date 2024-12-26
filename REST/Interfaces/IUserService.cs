@@ -12,6 +12,6 @@ namespace REST.Interfaces
         public Task<UserStatus> Edit(User credentials,int id);
         public Task<User?> GetByUsername(string? username);
         public Task<UserStatus> Register(User credentials);
-        public Task<bool> Login(User credentials);
+        public Task<User?> Login(User credentials);
     }
 }
