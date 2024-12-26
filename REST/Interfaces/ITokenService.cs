@@ -1,7 +1,9 @@
+using REST.Models;
+
 namespace REST.Interfaces
 {
     public interface ITokenService
     {
-        public string GenerateJWT(string username);
+        public string GenerateJWT(User user);
     }
 }

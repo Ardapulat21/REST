@@ -28,10 +28,10 @@ namespace REST.Controllers
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult?> Login([FromBody] User? credentials){
-            bool isValid = await _userService.Login(credentials);
-            if(isValid) 
+            var user = await _userService.Login(credentials);
+            if(user != null) 
             {
-                var token = _tokenService.GenerateJWT(credentials.Username);
+                var token = _tokenService.GenerateJWT(user);
                 return Ok(token);
             }
             return NotFound("User could not be found!");
