@@ -22,7 +22,7 @@ namespace REST.Services
                 issuer: issuer,
                 audience: audience,
                 notBefore: DateTime.UtcNow,
-                expires: DateTime.UtcNow.AddMinutes(10),
+                expires: DateTime.UtcNow.AddHours(1),
                 claims: new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.Username),

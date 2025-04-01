@@ -61,11 +61,10 @@ namespace REST.Services
         }
         public async Task<User?> Login(User credentials){
             var user = await GetByUsername(credentials.Username);
-            if(user != null && user.Username == credentials.Username  && 
-            _hashingService.IsMatched(credentials.Password,user.Password))
-            {
+            if(user?.Username == credentials.Username  && 
+            _hashingService.IsMatched(credentials.Password,user?.Password))
                 return user;
-            }
+                
             return null;
         }
     }

@@ -17,8 +17,8 @@ namespace REST.Controllers
             _tokenService = tokenService;
             _userService = userService;
         }
-        [Authorize]
         [HttpGet]
+        [Authorize]
         [Route("GetAllUsers")]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -32,7 +32,12 @@ namespace REST.Controllers
             if(user != null) 
             {
                 var token = _tokenService.GenerateJWT(user);
-                return Ok(token);
+                return Json(
+                    new {
+                        Username = user.Username,
+                        Email = user.Email,
+                        Token = token
+                        });
             }
             return NotFound("User could not be found!");
         }
@@ -40,16 +45,14 @@ namespace REST.Controllers
         [Route("Register")]
         public async Task<IActionResult> Register([FromBody] User? user)
         {
-           var userStatus = await _userService.Register(user);
-           switch (userStatus)
-           {
-                case UserStatus.Found:
-                    return Conflict("User already have been registed.");
-                case UserStatus.OK:
-                    return Ok("User was registered");
-                default:
-                    return BadRequest(userStatus);
-           }
+            var userStatus = await _userService.Register(user);
+            IActionResult result = userStatus switch 
+            {
+                UserStatus.Found => Conflict("User already have been registed."),
+                UserStatus.OK =>  Ok("User was registered"),
+                _ => NotFound("")
+            };
+            return result;
         }
         [Authorize]
         [HttpGet]
@@ -57,14 +60,12 @@ namespace REST.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var userStatus = await _userService.Delete(id);
-            switch(userStatus){
-                case UserStatus.NotFound:
-                    return NotFound("User could not be found.");
-                case UserStatus.OK:
-                    return Ok("User have been deleted.");
-                default:
-                    return BadRequest(userStatus);
-            }
+            IActionResult result = userStatus switch{
+                UserStatus.NotFound => NotFound("User could not be found."),
+                UserStatus.OK => Ok("User have been deleted."),
+                _ => BadRequest(userStatus)
+            };
+            return result;
         }
         [Authorize]
         [HttpPut]
@@ -72,16 +73,13 @@ namespace REST.Controllers
         public async Task<IActionResult> Edit([FromBody] User? user,int id)
         {
             var userStatus = await _userService.Edit(user,id);
-            switch(userStatus){
-                case UserStatus.OK:
-                    return Ok("User have been edited");
-                case UserStatus.Found:
-                    return Conflict("Username or Email has taken.");
-                case UserStatus.NotFound:
-                    return NotFound("User could not be found.");
-                default:
-                    return BadRequest(userStatus);
-            }
+            IActionResult result = userStatus switch{
+                UserStatus.NotFound => NotFound("User could not be found."),
+                UserStatus.Found => Conflict("Username or Email has taken."),
+                UserStatus.OK => Ok("User have been edited"),
+                _ => BadRequest(userStatus)
+            };
+            return result;
         }
     }
 }
